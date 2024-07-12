@@ -24,6 +24,12 @@ IMRes' goal is to provide a light and efficient way for extracting image dimensi
 
 ## Benchmarks
 
+IMRes is faster than the native Go image library
+
+The Go library `golang.org/x/image` does not support some image formats such as AVIF, TIFF. IMRes not only supports these formats but is also way faster for the formats it supports. I'll continually working to make performance even better than now though.
+
+
+
 ```sh
 $ go test -bench=. -benchmem
 ```
