@@ -7,8 +7,8 @@ import (
 	"io"
 )
 
-// GetAvifDimensions extracts dimensions from an AVIF header.
-func GetAvifDimensions(r io.ReadSeeker, header []byte) (width, height int, err error) {
+// GetHeifDimensions extracts dimensions from a HEIF header.
+func GetHeifDimensions(r io.ReadSeeker) (width, height int, err error) {
 	// Ensure we start from the beginning
 	_, err = r.Seek(0, io.SeekStart)
 	if err != nil {
@@ -27,8 +27,17 @@ func GetAvifDimensions(r io.ReadSeeker, header []byte) (width, height int, err e
 		return 0, 0, err
 	}
 
+	// Skip the "ftyp" box content
+	_, err = r.Seek(8, io.SeekCurrent)
+	if err != nil {
+		return 0, 0, err
+	}
+
+	// Define the ispe signature
+	ispeSignature := []byte{0x00, 0x00, 0x00, 0x14, 0x69, 0x73, 0x70, 0x65}
+
+	// Buffer to read the stream
 	buffer := make([]byte, 8)
-	ispeSignature := []byte{0x69, 0x73, 0x70, 0x65} // "ispe" in bytes
 
 	for {
 		_, err := io.ReadFull(r, buffer)
@@ -39,7 +48,8 @@ func GetAvifDimensions(r io.ReadSeeker, header []byte) (width, height int, err e
 			return 0, 0, err
 		}
 
-		if bytes.Equal(buffer[4:], ispeSignature) {
+		// Check if the buffer matches the ispe signature
+		if bytes.Equal(buffer, ispeSignature) {
 			ispeData := make([]byte, 12)
 			_, err := io.ReadFull(r, ispeData)
 			if err != nil {
@@ -50,6 +60,7 @@ func GetAvifDimensions(r io.ReadSeeker, header []byte) (width, height int, err e
 			height = int(binary.BigEndian.Uint32(ispeData[8:12]))
 			return width, height, nil
 		} else {
+			// Move back 7 bytes to ensure overlapping sequences are handled
 			_, err = r.Seek(-7, io.SeekCurrent)
 			if err != nil {
 				return 0, 0, err

@@ -5,11 +5,8 @@ import (
 	"io"
 )
 
-var ispeSignature = []byte{0x00, 0x00, 0x00, 0x14, 0x69, 0x73, 0x70, 0x65}
-
 // GetImageDimensions reads the dimensions from a readable stream.
 func GetImageDimensions(r io.ReadSeeker) (width, height int, err error) {
-	// 30-byte header should be enough to determine *most* image types
 	header := make([]byte, 30)
 	_, err = r.Read(header)
 	if err != nil {
@@ -29,8 +26,17 @@ func GetImageDimensions(r io.ReadSeeker) (width, height int, err error) {
 	case header[0] == 'R' && header[1] == 'I' && header[2] == 'F' && header[3] == 'F' && header[8] == 'W' && header[9] == 'E' && header[10] == 'B' && header[11] == 'P':
 		return GetWebPDimensions(r, header)
 
-	case string(header[4:8]) == "ftyp" && (string(header[8:12]) == "avif" || string(header[8:12]) == "avis"):
-		return GetAvifDimensions(r, header)
+	case string(header[4:8]) == "ftyp":
+		nextBytes := string(header[8:12])
+		switch nextBytes {
+		case "mif1", "msf1", "heic", "heix", "hevc", "hevx":
+			return GetHeifDimensions(r)
+
+		case "avif", "avis":
+			return GetAvifDimensions(r, header)
+		}
+
+		fallthrough
 
 	default:
 		return 0, 0, errors.New("unsupported file format")
