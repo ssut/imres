@@ -1,4 +1,4 @@
-package main
+package imres
 
 import (
 	"bytes"
@@ -56,7 +56,7 @@ func BenchmarkStandardImageDimensions(b *testing.B) {
 			continue
 		}
 
-		filepath := filepath.Join("testdata", file.Name())
+		filepath := filepath.Join("../testdata", file.Name())
 		data, err := os.ReadFile(filepath)
 		if err != nil {
 			b.Errorf("failed to read file %s: %v", file.Name(), err)

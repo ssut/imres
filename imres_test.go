@@ -1,4 +1,4 @@
-package main
+package imres
 
 import (
 	"fmt"
@@ -21,7 +21,7 @@ func parseFilename(filename string) (width, height int, err error) {
 
 	widthHeightParts := strings.Split(filename, "x")
 	widthStr := widthHeightParts[0]
-	heightStr := strings.Split(widthHeightParts[1], "_")[0]
+	heightStr := strings.Split(strings.Split(widthHeightParts[1], "_")[0], ".")[0]
 
 	width, err = strconv.Atoi(widthStr)
 	if err != nil {
