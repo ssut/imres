@@ -38,6 +38,9 @@ func GetImageDimensions(r io.ReadSeeker) (width, height int, err error) {
 
 		fallthrough
 
+	case header[0] == 'I' && header[1] == 'I' || header[0] == 'M' && header[1] == 'M':
+		return GetTiffDimensions(r)
+
 	default:
 		return 0, 0, errors.New("unsupported file format")
 	}
