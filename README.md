@@ -19,6 +19,7 @@ IMRes' goal is to provide a light and efficient way for extracting image dimensi
 - GIF
 - WEBP: VP8, VP8L, and VP8X
 - AVIF
+- HEIF (very experimental): I must note that HEIF is not thoroughly tested due to the nature of HEIF support in the real world, some challenges come from obtaining sample images (probably due to the license requirements for the codec.)
 
 ## Benchmarks
 
