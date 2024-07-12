@@ -47,7 +47,7 @@ func GetWebPDimensions(r io.Reader, header []byte) (width, height int, err error
 	}
 
 	switch string(header[12:16]) {
-	case "VP8 ":
+	case "VP8":
 		width = int(binary.LittleEndian.Uint16(header[26:28])) & 0x3FFF
 		height = int(binary.LittleEndian.Uint16(header[28:30])) & 0x3FFF
 
