@@ -1,4 +1,4 @@
-package imres
+package tests
 
 import (
 	"fmt"
@@ -10,6 +10,8 @@ import (
 	"strconv"
 	"strings"
 	"testing"
+
+	"github.com/ssut/imres"
 )
 
 func parseFilename(filename string) (width, height int, err error) {
@@ -86,7 +88,7 @@ func TestImageDimensions(t *testing.T) {
 			continue
 		}
 
-		width, height, err := GetImageDimensions(f)
+		width, height, err := imres.GetImageDimensions(f)
 		f.Close()
 		if err != nil {
 			t.Errorf("failed to get dimensions for file %s: %v", file.Name(), err)

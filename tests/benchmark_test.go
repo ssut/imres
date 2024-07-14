@@ -1,4 +1,4 @@
-package imres
+package tests
 
 import (
 	"bytes"
@@ -11,6 +11,7 @@ import (
 
 	"os"
 
+	"github.com/ssut/imres"
 	_ "golang.org/x/image/webp"
 )
 
@@ -36,7 +37,7 @@ func BenchmarkCustomImageDimensions(b *testing.B) {
 		b.Run(file.Name(), func(b *testing.B) {
 			for i := 0; i < b.N; i++ {
 				r := bytes.NewReader(data)
-				_, _, err := GetImageDimensions(r)
+				_, _, err := imres.GetImageDimensions(r)
 				if err != nil {
 					b.Errorf("failed to get dimensions for file %s: %v", file.Name(), err)
 				}
