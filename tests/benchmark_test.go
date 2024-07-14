@@ -34,12 +34,17 @@ func BenchmarkCustomImageDimensions(b *testing.B) {
 			continue
 		}
 
+		expectedWidth, expectedHeight, _ := parseFilename(file.Name())
 		b.Run(file.Name(), func(b *testing.B) {
 			for i := 0; i < b.N; i++ {
 				r := bytes.NewReader(data)
-				_, _, err := imres.GetImageDimensions(r)
+				width, height, err := imres.GetImageDimensions(r)
 				if err != nil {
 					b.Errorf("failed to get dimensions for file %s: %v", file.Name(), err)
+				}
+
+				if width != expectedWidth || height != expectedHeight {
+					b.Errorf("expected dimensions for file %s: %dx%d, got: %dx%d", file.Name(), expectedWidth, expectedHeight, width, height)
 				}
 			}
 		})
@@ -64,12 +69,17 @@ func BenchmarkStandardImageDimensions(b *testing.B) {
 			continue
 		}
 
+		expectedWidth, expectedHeight, _ := parseFilename(file.Name())
 		b.Run(file.Name(), func(b *testing.B) {
 			for i := 0; i < b.N; i++ {
 				r := bytes.NewReader(data)
-				_, _, err := image.DecodeConfig(r)
+				config, _, err := image.DecodeConfig(r)
 				if err != nil {
 					b.Errorf("failed to decode config for file %s: %v", file.Name(), err)
+				}
+
+				if config.Width != expectedWidth || config.Height != expectedHeight {
+					b.Errorf("expected dimensions for file %s: %dx%d, got: %dx%d", file.Name(), expectedWidth, expectedHeight, config.Width, config.Height)
 				}
 			}
 		})
