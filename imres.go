@@ -53,11 +53,8 @@ func GetImageDimensions(r io.ReadSeeker) (width, height int, err error) {
 	if string(header[4:8]) == "ftyp" {
 		nextBytes := string(header[8:12])
 		switch nextBytes {
-		case "mif1", "msf1", "heic", "heix", "hevc", "hevx":
-			return GetHeifDimensions(r)
-
-		case "avif", "avis":
-			return GetAvifDimensions(r, header)
+		case "mif1", "msf1", "heic", "heix", "hevc", "hevx", "avif", "avis":
+			return GetHeifDimensions(r, header)
 		}
 	}
 

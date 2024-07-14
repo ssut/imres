@@ -1,30 +1,15 @@
 package imres
 
 import (
-	"bytes"
 	"encoding/binary"
-	"errors"
 	"io"
 )
 
-// GetHeifDimensions extracts dimensions from a HEIF header.
-func GetHeifDimensions(r io.ReadSeeker) (width, height int, err error) {
+// GetHeifDimensions extracts dimensions.
+// This can be used for both Heif and Avif: https://aomediacodec.github.io/av1-avif/v1.1.0.html#image-spatial-extents-property
+func GetHeifDimensions(r io.ReadSeeker, header []byte) (width, height int, err error) {
+	// Ensure we start from the beginning
 	_, err = r.Seek(0, io.SeekStart)
-	if err != nil {
-		return 0, 0, err
-	}
-
-	pos, err := findFtyp(r)
-	if err != nil {
-		return 0, 0, err
-	}
-
-	_, err = r.Seek(pos, io.SeekStart)
-	if err != nil {
-		return 0, 0, err
-	}
-
-	_, err = r.Seek(8, io.SeekCurrent)
 	if err != nil {
 		return 0, 0, err
 	}
@@ -34,13 +19,10 @@ func GetHeifDimensions(r io.ReadSeeker) (width, height int, err error) {
 	for {
 		_, err := io.ReadFull(r, buffer)
 		if err != nil {
-			if err == io.EOF {
-				return 0, 0, errors.New("ispe box not found")
-			}
 			return 0, 0, err
 		}
 
-		if bytes.Equal(buffer, ispeSignature) {
+		if string(buffer) == ispeSignature {
 			ispeData := make([]byte, 12)
 			_, err := io.ReadFull(r, ispeData)
 			if err != nil {
