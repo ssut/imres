@@ -18,8 +18,6 @@ $ go get github.com/ssut/imres
 
 ## Supported Formats
 
-(TODO: Detailed format)
-
 - JPEG
 - PNG
 - GIF
@@ -27,6 +25,7 @@ $ go get github.com/ssut/imres
 - AVIF
 - HEIF (very experimental): I must note that HEIF is not thoroughly tested due to the nature of HEIF support in the real world, some challenges come from obtaining sample images (probably due to the license requirements for the codec.)
 - TIF (TIFF)
+- BMP
 
 ## Benchmarks
 
@@ -37,7 +36,7 @@ The Go library `golang.org/x/image` does not support some image formats such as 
 
 
 ```sh
-$ go test -bench=. -benchmem
+$ go test ./tests/... -bench=. -benchmem
 ```
 
 See [https://github.com/ssut/imres/wiki/Benchmarks](https://github.com/ssut/imres/wiki/Benchmarks).

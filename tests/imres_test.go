@@ -39,7 +39,7 @@ func parseFilename(filename string) (width, height int, err error) {
 }
 
 func getTestFiles() ([]fs.FileInfo, error) {
-	allowedExtensions := [...]string{".jpg", ".jpeg", ".png", ".gif", ".webp", ".avif", ".heic", ".heif", ".svg", ".tif", ".tiff"}
+	allowedExtensions := [...]string{".jpg", ".jpeg", ".png", ".gif", ".webp", ".avif", ".heic", ".heif", ".svg", ".tif", ".tiff", ".bmp"}
 
 	f, err := os.Open("testdata")
 	if err != nil {
