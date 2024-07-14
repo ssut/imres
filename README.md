@@ -33,8 +33,6 @@ IMRes is faster than the native Go image library
 
 The Go library `golang.org/x/image` does not support some image formats such as AVIF, TIFF. IMRes not only supports these formats but is also way faster for the formats it supports. Still I'm willing to make the performance even better than now though.
 
-
-
 ```sh
 $ go test ./tests/... -bench=. -benchmem
 ```

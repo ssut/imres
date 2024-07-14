@@ -13,20 +13,44 @@ func GetImageDimensions(r io.ReadSeeker) (width, height int, err error) {
 		return 0, 0, err
 	}
 
-	switch {
-	case header[0] == 0x89 && header[1] == 0x50 && header[2] == 0x4E && header[3] == 0x47:
-		return GetPngDimensions(header)
+	switch header[0] {
+	case 0x89:
+		if header[1] == 0x50 && header[2] == 0x4E && header[3] == 0x47 {
+			return GetPngDimensions(header)
+		}
 
-	case header[0] == 0xFF && header[1] == 0xD8 && header[2] == 0xFF:
-		return GetJpegDimensions(r, header)
+	case 0xFF:
+		if header[1] == 0xD8 && header[2] == 0xFF {
+			return GetJpegDimensions(r, header)
+		}
 
-	case header[0] == 'G' && header[1] == 'I' && header[2] == 'F' && (header[3] == '8' && (header[4] == '7' || header[4] == '9') && header[5] == 'a'):
-		return GetGifDimensions(header)
+	case 'G':
+		if header[1] == 'I' && header[2] == 'F' {
+			if header[3] == '8' && (header[4] == '7' || header[4] == '9') && header[5] == 'a' {
+				return GetGifDimensions(header)
+			}
+		}
 
-	case header[0] == 'R' && header[1] == 'I' && header[2] == 'F' && header[3] == 'F' && header[8] == 'W' && header[9] == 'E' && header[10] == 'B' && header[11] == 'P':
-		return GetWebPDimensions(r, header)
+	case 'R':
+		if header[1] == 'I' && header[2] == 'F' && header[3] == 'F' {
+			if header[8] == 'W' && header[9] == 'E' && header[10] == 'B' && header[11] == 'P' {
+				return GetWebPDimensions(r, header)
+			}
+		}
 
-	case string(header[4:8]) == "ftyp":
+	case 'B':
+		if header[1] == 'M' {
+			return GetBmpDimensions(header)
+		}
+
+	case 'I', 'M':
+		if (header[0] == 'I' && header[1] == 'I') || (header[0] == 'M' && header[1] == 'M') {
+			return GetTiffDimensions(r)
+		}
+	}
+
+	// Check for file type box
+	if string(header[4:8]) == "ftyp" {
 		nextBytes := string(header[8:12])
 		switch nextBytes {
 		case "mif1", "msf1", "heic", "heix", "hevc", "hevx":
@@ -35,16 +59,7 @@ func GetImageDimensions(r io.ReadSeeker) (width, height int, err error) {
 		case "avif", "avis":
 			return GetAvifDimensions(r, header)
 		}
-
-		fallthrough
-
-	case header[0] == 'B' && header[1] == 'M':
-		return GetBmpDimensions(header)
-
-	case header[0] == 'I' && header[1] == 'I' || header[0] == 'M' && header[1] == 'M':
-		return GetTiffDimensions(r)
-
-	default:
-		return 0, 0, errors.New("unsupported file format")
 	}
+
+	return 0, 0, errors.New("unsupported file format")
 }
